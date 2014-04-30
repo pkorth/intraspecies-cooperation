@@ -15,9 +15,11 @@ class Model:
 		self.agents = []
 		self.food = []
 		self.tick = self.generation = 0
-		self.attack_count = 0
-		self.log_lifetime = []
-		self.log_attacks = []
+		self._log_lifetime = [0]
+		self._log_cc = [0]
+		self._log_cd = [0]
+		self._log_dd = [0]
+		self._log_event = [0]
 
 	def on_tick(self):
 		"""
@@ -38,18 +40,32 @@ class Model:
 
 	def on_exit(self):
 		""" Called when main application is closing """
+		# Get rid of extra data on front and back in model logs
+		self._log_lifetime = self._log_lifetime[1:-1]
+		self._log_cc = self._log_cc[1:-1]
+		self._log_cd = self._log_cd[1:-1]
+		self._log_dd = self._log_dd[1:-1]
+		self._log_event = self._log_event[1:-1]
+		# Output results
 		print "---> Model parameters"
-		print "World size:           (%d,%d)" % self.size
-		print "Agents:               %d" % Model._AGENT_COUNT
-		print "Survivor percent:     %.2f" % Model._SURVIVOR_PERCENT
-		print "Food per Agent:       %.2f" % Model._FOOD_PER_AGENT
+		print "World size:         (%d,%d)" % self.size
+		print "Agents:             %d" % Model._AGENT_COUNT
+		print "Survivor percent:   %.2f" % Model._SURVIVOR_PERCENT
+		print "Food per Agent:     %.2f" % Model._FOOD_PER_AGENT
 		print "---> Model results"
-		print "Final generation:     %d" % (self.generation - 1)
-		print "Generation lifetimes: %s" % ','.join([str(x) for x in
-													 self.log_lifetime])
-		print "Generation attacks:   %s" % ','.join([str(x) for x in
-													 self.log_attacks])
-		print "--->  Configuration of random current Agent"
+		print "Final generation:   %d" % (self.generation - 1)
+		print "Lifetimes:          %s" % ','.join([str(x) for x in
+													 self._log_lifetime])
+		print "All events:         %s" % ','.join([str(x) for x in
+													 self._log_event])
+		print "C-C events:         %s" % ','.join([str(x) for x in
+													 self._log_cc])
+		print "C-D events:         %s" % ','.join([str(x) for x in
+													 self._log_cd])
+		print "D-D events:         %s" % ','.join([str(x) for x in
+													 self._log_dd])
+
+		print "--->  Configuration of random living Agent"
 		if len(self.agents) > 0:
 			print random.choice(self.agents).brain.pretty_print()
 		else:
@@ -61,8 +77,12 @@ class Model:
 
 	def log_event(self, kind):
 		""" Log an event of some sort to be saved in Model results """
-		if kind == "attack":
-			self.attack_count += 1
+		if kind == "cc":
+			self._log_cc[self.generation] += 1
+		elif kind == "cd":
+			self._log_cd[self.generation] += 1
+		elif kind == "dd":
+			self._log_dd[self.generation] += 1
 
 	def _create_initial_gen(self):
 		""" Create an initial population of Agents """
@@ -111,13 +131,19 @@ class Model:
 		if self.generation == 0:
 			self._create_initial_gen()
 		else:
-			self.log_lifetime.append(self.tick)
-			self.log_attacks.append(self.attack_count)
+			self._log_lifetime[self.generation] = self.tick
+			self._log_event[self.generation] = (self._log_cc[self.generation] +
+												self._log_cd[self.generation] +
+												self._log_dd[self.generation])
 			self._create_next_gen()
 		self._create_initial_food()
 		self.generation += 1
 		self.tick = 0
-		self.attack_count = 0
+		self._log_lifetime.append(0)
+		self._log_cc.append(0)
+		self._log_cd.append(0)
+		self._log_dd.append(0)
+		self._log_event.append(0)
 
 	def _update_world(self):
 		"""

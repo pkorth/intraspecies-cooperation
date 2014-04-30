@@ -240,7 +240,12 @@ class Agent(Actor):
 			self._remember_interaction(other, got_attacked)
 			self.prev_interact_agent = other
 			# Notify Model of event
-			model.log_event("attack")
+			if not did_attack and not got_attacked:
+				model.log_event("cc")
+			elif did_attack and got_attacked:
+				model.log_event("dd")
+			else:
+				model.log_event("cd")
 		self.interact_agent = None
 
 	def _update_hunger_sensor(self):
