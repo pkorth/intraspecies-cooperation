@@ -54,15 +54,15 @@ class Model:
 		print "Food per Agent:     %.2f" % Model._FOOD_PER_AGENT
 		print "---> Model results"
 		print "Final generation:   %d" % (self.generation - 1)
-		print "Lifetimes:          %s" % ','.join([str(x) for x in
+		print "Lifetimes:          [%s]" % ','.join([str(x) for x in
 													 self._log_lifetime])
-		print "All events:         %s" % ','.join([str(x) for x in
+		print "All events:         [%s]" % ','.join([str(x) for x in
 													 self._log_event])
-		print "C-C events:         %s" % ','.join([str(x) for x in
+		print "C-C events:         [%s]" % ','.join([str(x) for x in
 													 self._log_cc])
-		print "C-D events:         %s" % ','.join([str(x) for x in
+		print "C-D events:         [%s]" % ','.join([str(x) for x in
 													 self._log_cd])
-		print "D-D events:         %s" % ','.join([str(x) for x in
+		print "D-D events:         [%s]" % ','.join([str(x) for x in
 													 self._log_dd])
 
 		print "--->  Configuration of random living Agent"
