@@ -27,9 +27,13 @@ class ConsoleApp:
 		""" Run the simulation until the user quits or reach max_generation """
 		self.is_running = True
 		self.model = model.Model(self.size)
+		current_generation = 0
 
 		while(self.is_running):
 			self.model.on_tick()
+			if self.model.generation != current_generation:
+				print "generation %d" % self.model.generation
+				current_generation = self.model.generation
 			if self.model.generation == self.max_generation + 1:
 				self.is_running = False
 
